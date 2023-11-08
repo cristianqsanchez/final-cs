@@ -1,33 +1,16 @@
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
+import TweetComponent from '../components/TweetComponent';
 import React from 'react';
 import {View, Text} from 'react-native';
 import {useForm} from 'react-hook-form';
+import {initializeApp} from 'firebase/app';
+import {getFirestore, collection, getDocs} from 'firebase/firestore';
 
 export default function Login() {
-  const postTweet = () => {
-    console.log('Tweet');
-  };
-  const {control, handleSubmit, watch} = useForm();
   return (
     <View>
-      <InputComponent
-        name="Text"
-        placeholder="Write something..."
-        control={control}
-        rules={{
-          required: 'Text is required',
-          maxLength: {
-            value: 280,
-            message: 'Text should be maximum 280 characters long',
-          },
-        }}
-      />
-      <ButtonComponent
-        backgroundColor="#0A4A5D"
-        text="POST"
-        onPress={postTweet}
-      />
+     <TweetComponent/>
     </View>
   );
 }
