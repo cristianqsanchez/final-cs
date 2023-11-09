@@ -9,12 +9,11 @@ const Stack = createNativeStackNavigator();
 function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="home">
+      <Stack.Navigator initialRouteName="login">
         <Stack.Screen name="login" component={Login} />
         <Stack.Screen name="home" component={Home} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
 export default App;
