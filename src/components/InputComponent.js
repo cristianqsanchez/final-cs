@@ -17,17 +17,14 @@ const InputComponent = ({
       render={({field: {value, onChange, onBlur}, fieldState: {error}}) => (
         <>
           <View
-            style={[
-              styles.container,
-              {borderColor: error ? 'red' : '#081D5D'},
-            ]}>
+            style={[styles.container, {borderColor: error ? 'red' : 'white'}]}>
             <TextInput
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={placeholder}
-              style={{color: '#081D5D'}}
-              placeholderTextColor="#081D5D" 
+              style={{color: 'white'}}
+              placeholderTextColor="white" 
               secureTextEntry={secureTextEntry}
             />
           </View>

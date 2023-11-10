@@ -1,8 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
-import { View, Text, FlatList, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { useForm } from 'react-hook-form';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
+import {useForm} from 'react-hook-form';
+// import {getTimeAgo} from '../utils/relative-time';
 import {
   arrayUnion,
   collection,
@@ -11,7 +19,7 @@ import {
   getDocs,
   updateDoc,
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import {db} from '../config/firebase';
 function createTweet(author, username, content) {
   return {
     author: author,
@@ -20,8 +28,8 @@ function createTweet(author, username, content) {
     date: Date.now(),
   };
 }
-function TweetComponent({ id }) {
-  const { control, handleSubmit } = useForm();
+function TweetComponent({id}) {
+  const {control, handleSubmit} = useForm();
   const [allTweets, setAllTweets] = useState([]);
   const saveTweet = async data => {
     try {
@@ -66,13 +74,13 @@ function TweetComponent({ id }) {
     fetchAllTweets();
   }, []);
 
-  const renderTweet = ({ item }) => (
+  const renderTweet = ({item}) => (
     <View style={styles.tweetContainer} key={item.date}>
       <View style={styles.headerContainer}>
         <Text style={styles.authorText}>{item.author}</Text>
         <Text style={styles.usernameText}>@{item.username}</Text>
       </View>
-      {/* <Text style={styles.dateText}>{item.date}</Text> */}
+      <Text style={styles.dateText}>{item.date}</Text>
       <Text style={styles.contentText}>{item.content}</Text>
     </View>
   );
@@ -94,9 +102,10 @@ function TweetComponent({ id }) {
             }}
           />
           <ButtonComponent
-            backgroundColor="#0A4A5D"
+            backgroundColor="black"
             text="POST"
             onPress={handleSubmit(saveTweet)}
+            color={'#081D5D'}
           />
           <FlatList
             data={allTweets}
@@ -133,7 +142,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   dateText: {
-    color: 'white',
+    color: '#8B8B8B',
     fontSize: 12,
     marginBottom: 5,
   },
