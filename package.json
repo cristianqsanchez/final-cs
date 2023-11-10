@@ -10,8 +10,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.19.4",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
+    "bcrypt": "^5.1.1",
     "firebase": "^10.5.2",
     "react": "18.2.0",
     "react-hook-form": "^7.48.2",

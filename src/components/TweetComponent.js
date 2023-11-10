@@ -4,7 +4,7 @@ import ButtonComponent from '../components/ButtonComponent';
 import {View, Text} from 'react-native';
 import {useForm} from 'react-hook-form';
 
-function TweetComponent() {
+function TweetComponent({id}) {
   const {control, handleSubmit, watch} = useForm();
   const postTweet = () => {
     console.log('Tweet');
