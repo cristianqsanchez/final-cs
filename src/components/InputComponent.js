@@ -19,19 +19,25 @@ const InputComponent = ({
           <View
             style={[
               styles.container,
-              {borderColor: error ? 'red' : '#e8e8e8'},
+              {borderColor: error ? 'red' : '#081D5D'},
             ]}>
             <TextInput
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={placeholder}
-              style={styles.input}
+              style={{color: '#081D5D'}}
+              placeholderTextColor="#081D5D" 
               secureTextEntry={secureTextEntry}
             />
           </View>
           {error && (
-            <Text style={{color: 'black', alignSelf: 'stretch'}}>
+            <Text
+              style={{
+                color: 'red',
+                alignSelf: 'flex-end',
+                marginHorizontal: '7%',
+              }}>
               {error.message || 'Error'}
             </Text>
           )}
@@ -43,10 +49,11 @@ const InputComponent = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#CBCFD0',
-    width: '100%',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: '97%',
     borderColor: '#0000',
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginVertical: 5,
