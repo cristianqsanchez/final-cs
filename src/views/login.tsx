@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
-import {View, Text} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {useNavigation} from '@react-navigation/native';
 import {collection, getDocs, where, query} from 'firebase/firestore';
@@ -25,7 +25,8 @@ export default function Login() {
       // User found, check password
       const user = userSnapshot.docs[0].data();
       if (user.password === data.password) {
-        navigation.navigate('home');
+        console.log(userSnapshot.docs[0].id);
+        navigation.navigate('home', { id: userSnapshot.docs[0].id });
       } else {
         setText('Login failed. Invalid username or password.');
       }
@@ -37,6 +38,7 @@ export default function Login() {
       <InputComponent
         name="username"
         placeholder="Username"
+        secureTextEntry={false}
         control={control}
         rules={{
           required: 'Username is required',
@@ -59,7 +61,7 @@ export default function Login() {
           },
         }}
       />
-      <Text>{text}</Text>
+      <Text style={styles.errorText}>{text}</Text>
       <ButtonComponent
         backgroundColor="#0A4A5D"
         text="Sign In"
@@ -68,3 +70,10 @@ export default function Login() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+  },
+});

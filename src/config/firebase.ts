@@ -12,13 +12,13 @@ import {
 } from '@env';
 
 const firebaseConfig = {
-  apiKey: API_KEY,
-  authDomain: AUTH_DOMAIN,
-  projectId: PROJECT_ID,
-  storageBucket: STORAGE_BUCKET,
-  messagingSenderId: MESSAGING_SENDER_ID,
-  appId: APP_ID,
-  measurementId: MEASUREMENT_ID,
+  apiKey: 'AIzaSyBUriNiCISL2tjwAB_65yOUpJezDwE1oo4',
+  authDomain: 'twitter-f9e75.firebaseapp.com',
+  projectId: 'twitter-f9e75',
+  storageBucket: 'twitter-f9e75.appspot.com',
+  messagingSenderId: '1016657856326',
+  appId: '1:1016657856326:web:4b468f0234c17df79c0747',
+  measurementId: 'G-TBL4DWFV3B'
 };
 
 const app = initializeApp(firebaseConfig);
