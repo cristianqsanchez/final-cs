@@ -11,8 +11,8 @@ const ButtonComponent = ({onPress, text, backgroundColor}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#3B71F3',
-    width: '100%',
+    backgroundColor: '#B9C0D5',
+    width: '97%',
     padding: 15,
     marginVertical: 5,
     alignItems: 'center',

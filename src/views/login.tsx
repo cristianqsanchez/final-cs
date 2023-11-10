@@ -6,6 +6,7 @@ import {useForm} from 'react-hook-form';
 import {useNavigation} from '@react-navigation/native';
 import {collection, getDocs, where, query} from 'firebase/firestore';
 import {db} from '../config/firebase';
+import globalStyles from '../styles/styles';
 
 export default function Login() {
   const {control, handleSubmit} = useForm();
@@ -34,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <View>
+    <View style={globalStyles.container}>
       <InputComponent
         name="username"
         placeholder="Username"
