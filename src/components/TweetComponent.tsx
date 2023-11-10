@@ -1,18 +1,29 @@
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 import {View, Text} from 'react-native';
 import {useForm} from 'react-hook-form';
+import {arrayUnion, doc, getDoc, updateDoc} from 'firebase/firestore';
+import {db} from '../config/firebase';
 
 function TweetComponent({id}) {
-  const {control, handleSubmit, watch} = useForm();
-  const postTweet = () => {
-    console.log('Tweet');
+  const {control, handleSubmit} = useForm();
+  const saveTweet = async data => {
+    try {
+      const userRef = doc(db, 'users', id);
+      const content = data.content;
+      await updateDoc(userRef, {
+        tweets: arrayUnion(content),
+      });
+    } catch (error) {
+      console.error('Error submitting tweet:', error);
+    }
   };
   return (
     <View>
       <InputComponent
-        name="Text"
+        secureTextEntry={false}
+        name="content"
         placeholder="Write something..."
         control={control}
         rules={{
@@ -26,7 +37,7 @@ function TweetComponent({id}) {
       <ButtonComponent
         backgroundColor="#0A4A5D"
         text="POST"
-        onPress={postTweet}
+        onPress={handleSubmit(saveTweet)}
       />
     </View>
   );
