@@ -97,13 +97,26 @@ function TweetComponent({ id }) {
   const signOut = () => {
     navigation.navigate('login');
   };
+  const formatTimestamp = (timestamp) => {
+    const colombianDateTime = new Intl.DateTimeFormat('es-CO', {
+      timeZone: 'America/Bogota',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    return colombianDateTime.format(timestamp);
+  };
   const renderTweet = ({item}) => (
     <View style={styles.tweetContainer} key={item.date}>
       <View style={styles.headerContainer}>
         <Text style={styles.authorText}>{item.author}</Text>
         <Text style={styles.usernameText}>@{item.username}</Text>
       </View>
-      <Text style={styles.dateText}>{item.date}</Text>
+      <Text style={styles.dateText}>{formatTimestamp(item.date)}</Text>
       <Text style={styles.contentText}>{item.content}</Text>
     </View>
   );
