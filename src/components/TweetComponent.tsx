@@ -35,6 +35,7 @@ function createTweet(author, username, content) {
   };
 }
 function TweetComponent({ id }) {
+  const [latestTimestamp, setLatestTimestamp] = useState(0);
   const navigation = useNavigation();
   const {control, handleSubmit} = useForm();
   const [allTweets, setAllTweets] = useState([]);
@@ -42,14 +43,17 @@ function TweetComponent({ id }) {
     try {
       const userRef = doc(db, 'users', id);
       const userDoc = await getDoc(userRef);
-
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        const newTweet = createTweet(
+          userData.fullname,
+          userData.username,
+          data.content,
+        );
         await updateDoc(userRef, {
-          tweets: arrayUnion(
-            createTweet(userData.fullname, userData.username, data.content),
-          ),
+          tweets: arrayUnion(newTweet),
         });
+        setLatestTimestamp(newTweet.date.milliseconds);
       }
     } catch (error) {
       console.error('Error submitting tweet:', error);
@@ -61,7 +65,6 @@ function TweetComponent({ id }) {
       try {
         const querySnapshot = await getDocs(collection(db, 'users'));
         const tweets = [];
-
         querySnapshot.forEach(doc => {
           const userData = doc.data();
           if (userData.tweets) {
@@ -76,7 +79,7 @@ function TweetComponent({ id }) {
     };
 
     fetchAllTweets();
-  }, []);
+  }, [latestTimestamp]);
   const signOut = () => {
     navigation.navigate('login');
   };
