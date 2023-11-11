@@ -60,16 +60,33 @@ function TweetComponent({ id }) {
   useEffect(() => {
     const fetchAllTweets = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        const tweets = [];
-        querySnapshot.forEach(doc => {
-          const userData = doc.data();
+        const userRef = doc(db, 'users', id);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const userFollowing = userData.following || [];
+
+          const tweets = [];
           if (userData.tweets) {
             tweets.push(...userData.tweets);
           }
-        });
-        tweets.sort((a, b) => b.date - a.date);
-        setAllTweets(tweets);
+          for (const followingUserId of userFollowing) {
+            const followingUserRef = doc(db, 'users', followingUserId);
+            const followingUserDoc = await getDoc(followingUserRef);
+
+            if (followingUserDoc.exists()) {
+              const followingUserData = followingUserDoc.data();
+
+              if (followingUserData.tweets) {
+                tweets.push(...followingUserData.tweets);
+              }
+            }
+          }
+
+          tweets.sort((a, b) => b.date - a.date);
+          setAllTweets(tweets);
+        }
       } catch (error) {
         console.error('Error fetching tweets:', error);
       }
