@@ -1,6 +1,8 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
+import {useForm} from 'react-hook-form';
+import {useNavigation} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -9,8 +11,6 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import {useForm} from 'react-hook-form';
-// import {getTimeAgo} from '../utils/relative-time';
 import {
   Timestamp,
   arrayUnion,
@@ -24,21 +24,18 @@ import {db} from '../config/firebase';
 function createTweet(author, username, content) {
   const timestamp = Timestamp.now();
   const date = timestamp.toDate();
-
-  const options = {timeZone: 'America/Bogota'};
-  const formattedDate = date.toLocaleString('es-ES', options);
-
   return {
     author: author,
     username: username,
     content: content,
     date: {
       milliseconds: date.getTime(),
-      formatted: date.toLocaleString('es-ES', {timeZone: 'America/Bogota'}), 
+      formatted: date.toLocaleString('es-ES', { timeZone: 'America/Bogota' }),
     },
   };
 }
-function TweetComponent({id}) {
+function TweetComponent({ id }) {
+  const navigation = useNavigation();
   const {control, handleSubmit} = useForm();
   const [allTweets, setAllTweets] = useState([]);
   const saveTweet = async data => {
@@ -80,7 +77,9 @@ function TweetComponent({id}) {
 
     fetchAllTweets();
   }, []);
-
+  const signOut = () => {
+    navigation.navigate('login');
+  };
   const renderTweet = ({item}) => (
     <View style={styles.tweetContainer} key={item.date}>
       <View style={styles.headerContainer}>
@@ -101,7 +100,6 @@ function TweetComponent({id}) {
             placeholder="Write something..."
             control={control}
             rules={{
-              required: 'Text is required',
               maxLength: {
                 value: 280,
                 message: 'Text should be maximum 280 characters long',
@@ -118,6 +116,12 @@ function TweetComponent({id}) {
             data={allTweets}
             renderItem={renderTweet}
             keyExtractor={item => item.date.toString()}
+          />
+          <ButtonComponent
+            backgroundColor="black"
+            text="SIGN OUT"
+            onPress={handleSubmit(signOut)}
+            color={'red'}
           />
         </View>
       </ScrollView>

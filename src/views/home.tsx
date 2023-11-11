@@ -2,6 +2,7 @@ import TweetComponent from '../components/TweetComponent';
 import React from 'react';
 import {View, Text, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import ButtonComponent from '../components/ButtonComponent';
 import {useRoute} from '@react-navigation/native';
 import globalStyles from '../styles/styles';
 export default function Home() {

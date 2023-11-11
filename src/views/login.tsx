@@ -27,7 +27,7 @@ export default function Login() {
       const user = userSnapshot.docs[0].data();
       if (user.password === data.password) {
         console.log(userSnapshot.docs[0].id);
-        navigation.navigate('home', { id: userSnapshot.docs[0].id });
+        navigation.navigate('home', {id: userSnapshot.docs[0].id});
       } else {
         setText('Login failed. Invalid username or password.');
       }
@@ -64,7 +64,8 @@ export default function Login() {
       />
       <Text style={styles.errorText}>{text}</Text>
       <ButtonComponent
-        backgroundColor="#0A4A5D"
+        color={'#000000'}
+        backgroundColor="#B9C0D5"
         text="Sign In"
         onPress={handleSubmit(login)}
       />
