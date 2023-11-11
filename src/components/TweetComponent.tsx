@@ -34,6 +34,7 @@ function TweetComponent({ id }) {
   const navigation = useNavigation();
   const {control, handleSubmit, reset} = useForm();
   const [allTweets, setAllTweets] = useState([]);
+  
   const saveTweet = async data => {
     try {
       const userRef = doc(db, 'users', id);
@@ -48,7 +49,7 @@ function TweetComponent({ id }) {
         await updateDoc(userRef, {
           tweets: arrayUnion(newTweet),
         });
-        setLatestTimestamp(newTweet.date.milliseconds);
+        setLatestTimestamp(newTweet.date);
         reset();
       }
     } catch (error) {
