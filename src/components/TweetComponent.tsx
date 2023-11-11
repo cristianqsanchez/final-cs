@@ -22,16 +22,11 @@ import {
 } from 'firebase/firestore';
 import {db} from '../config/firebase';
 function createTweet(author, username, content) {
-  const timestamp = Timestamp.now();
-  const date = timestamp.toDate();
   return {
     author: author,
     username: username,
     content: content,
-    date: {
-      milliseconds: date.getTime(),
-      formatted: date.toLocaleString('es-ES', { timeZone: 'America/Bogota' }),
-    },
+    date: Date.now(),
   };
 }
 function TweetComponent({ id }) {
@@ -72,7 +67,7 @@ function TweetComponent({ id }) {
             tweets.push(...userData.tweets);
           }
         });
-        tweets.sort((a, b) => b.date.milliseconds - a.date.milliseconds);
+        tweets.sort((a, b) => b.date - a.date);
         setAllTweets(tweets);
       } catch (error) {
         console.error('Error fetching tweets:', error);
@@ -90,7 +85,7 @@ function TweetComponent({ id }) {
         <Text style={styles.authorText}>{item.author}</Text>
         <Text style={styles.usernameText}>@{item.username}</Text>
       </View>
-      <Text style={styles.dateText}>{item.date.formatted}</Text>
+      <Text style={styles.dateText}>{item.date}</Text>
       <Text style={styles.contentText}>{item.content}</Text>
     </View>
   );
