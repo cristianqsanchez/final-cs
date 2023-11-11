@@ -1,6 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
+import {useForm} from 'react-hook-form';
+import {useNavigation} from '@react-navigation/native';
 import {
   View,
   Text,
@@ -9,9 +11,8 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import {useForm} from 'react-hook-form';
-// import {getTimeAgo} from '../utils/relative-time';
 import {
+  Timestamp,
   arrayUnion,
   collection,
   doc,
@@ -28,21 +29,28 @@ function createTweet(author, username, content) {
     date: Date.now(),
   };
 }
-function TweetComponent({id}) {
-  const {control, handleSubmit} = useForm();
+function TweetComponent({ id }) {
+  const [latestTimestamp, setLatestTimestamp] = useState(0);
+  const navigation = useNavigation();
+  const {control, handleSubmit, reset} = useForm();
   const [allTweets, setAllTweets] = useState([]);
+  
   const saveTweet = async data => {
     try {
       const userRef = doc(db, 'users', id);
       const userDoc = await getDoc(userRef);
-
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        const newTweet = createTweet(
+          userData.fullname,
+          userData.username,
+          data.content,
+        );
         await updateDoc(userRef, {
-          tweets: arrayUnion(
-            createTweet(userData.fullname, userData.username, data.content),
-          ),
+          tweets: arrayUnion(newTweet),
         });
+        setLatestTimestamp(newTweet.date);
+        reset();
       }
     } catch (error) {
       console.error('Error submitting tweet:', error);
@@ -52,35 +60,63 @@ function TweetComponent({id}) {
   useEffect(() => {
     const fetchAllTweets = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        const tweets = [];
+        const userRef = doc(db, 'users', id);
+        const userDoc = await getDoc(userRef);
 
-        querySnapshot.forEach(doc => {
-          const userData = doc.data();
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const userFollowing = userData.following || [];
+
+          const tweets = [];
           if (userData.tweets) {
             tweets.push(...userData.tweets);
           }
-        });
+          for (const followingUserId of userFollowing) {
+            const followingUserRef = doc(db, 'users', followingUserId);
+            const followingUserDoc = await getDoc(followingUserRef);
 
-        // Sort tweets by date, assuming 'date' is a timestamp field
-        tweets.sort((a, b) => b.date - a.date);
+            if (followingUserDoc.exists()) {
+              const followingUserData = followingUserDoc.data();
 
-        setAllTweets(tweets);
+              if (followingUserData.tweets) {
+                tweets.push(...followingUserData.tweets);
+              }
+            }
+          }
+
+          tweets.sort((a, b) => b.date - a.date);
+          setAllTweets(tweets);
+        }
       } catch (error) {
         console.error('Error fetching tweets:', error);
       }
     };
 
     fetchAllTweets();
-  }, []);
+  }, [latestTimestamp]);
+  const signOut = () => {
+    navigation.navigate('login');
+  };
+  const formatTimestamp = (timestamp) => {
+    const colombianDateTime = new Intl.DateTimeFormat('es-CO', {
+      timeZone: 'America/Bogota',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
 
+    return colombianDateTime.format(timestamp);
+  };
   const renderTweet = ({item}) => (
     <View style={styles.tweetContainer} key={item.date}>
       <View style={styles.headerContainer}>
         <Text style={styles.authorText}>{item.author}</Text>
         <Text style={styles.usernameText}>@{item.username}</Text>
       </View>
-      <Text style={styles.dateText}>{item.date}</Text>
+      <Text style={styles.dateText}>{formatTimestamp(item.date)}</Text>
       <Text style={styles.contentText}>{item.content}</Text>
     </View>
   );
@@ -94,7 +130,6 @@ function TweetComponent({id}) {
             placeholder="Write something..."
             control={control}
             rules={{
-              required: 'Text is required',
               maxLength: {
                 value: 280,
                 message: 'Text should be maximum 280 characters long',
@@ -111,6 +146,12 @@ function TweetComponent({id}) {
             data={allTweets}
             renderItem={renderTweet}
             keyExtractor={item => item.date.toString()}
+          />
+          <ButtonComponent
+            backgroundColor="black"
+            text="SIGN OUT"
+            onPress={handleSubmit(signOut)}
+            color={'red'}
           />
         </View>
       </ScrollView>
