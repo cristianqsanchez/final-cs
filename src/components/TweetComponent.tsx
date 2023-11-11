@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
 import {useForm} from 'react-hook-form';
@@ -37,7 +37,7 @@ function createTweet(author, username, content) {
 function TweetComponent({ id }) {
   const [latestTimestamp, setLatestTimestamp] = useState(0);
   const navigation = useNavigation();
-  const {control, handleSubmit} = useForm();
+  const {control, handleSubmit, reset} = useForm();
   const [allTweets, setAllTweets] = useState([]);
   const saveTweet = async data => {
     try {
@@ -54,6 +54,7 @@ function TweetComponent({ id }) {
           tweets: arrayUnion(newTweet),
         });
         setLatestTimestamp(newTweet.date.milliseconds);
+        reset();
       }
     } catch (error) {
       console.error('Error submitting tweet:', error);

@@ -9,7 +9,7 @@ import {db} from '../config/firebase';
 import globalStyles from '../styles/styles';
 
 export default function Login() {
-  const {control, handleSubmit} = useForm();
+  const {control, handleSubmit, reset} = useForm();
   const navigation = useNavigation();
   const [text, setText] = useState('');
 
@@ -28,6 +28,7 @@ export default function Login() {
       if (user.password === data.password) {
         console.log(userSnapshot.docs[0].id);
         navigation.navigate('home', {id: userSnapshot.docs[0].id});
+        reset();
       } else {
         setText('Login failed. Invalid username or password.');
       }
