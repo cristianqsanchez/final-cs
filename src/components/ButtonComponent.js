@@ -1,10 +1,10 @@
 import React from 'react';
 import {StyleSheet, Text, Pressable} from 'react-native';
 
-const ButtonComponent = ({onPress, text, backgroundColor}) => {
+const ButtonComponent = ({onPress, text, backgroundColor, color}) => {
   return (
     <Pressable onPress={onPress} style={[styles.container, {backgroundColor}]}>
-      <Text style={styles.text}>{text}</Text>
+      <Text style={(styles.text, {color})}>{text}</Text>
     </Pressable>
   );
 };
@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
-    color: 'white',
   },
 });
 

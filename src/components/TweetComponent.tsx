@@ -1,9 +1,18 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import InputComponent from '../components/InputComponent';
 import ButtonComponent from '../components/ButtonComponent';
-import { View, Text, FlatList, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { useForm } from 'react-hook-form';
+import {useForm} from 'react-hook-form';
+import {useNavigation} from '@react-navigation/native';
 import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
+import {
+  Timestamp,
   arrayUnion,
   collection,
   doc,
@@ -11,30 +20,41 @@ import {
   getDocs,
   updateDoc,
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import {db} from '../config/firebase';
 function createTweet(author, username, content) {
+  const timestamp = Timestamp.now();
+  const date = timestamp.toDate();
   return {
     author: author,
     username: username,
     content: content,
-    date: Date.now(),
+    date: {
+      milliseconds: date.getTime(),
+      formatted: date.toLocaleString('es-ES', { timeZone: 'America/Bogota' }),
+    },
   };
 }
 function TweetComponent({ id }) {
-  const { control, handleSubmit } = useForm();
+  const [latestTimestamp, setLatestTimestamp] = useState(0);
+  const navigation = useNavigation();
+  const {control, handleSubmit, reset} = useForm();
   const [allTweets, setAllTweets] = useState([]);
   const saveTweet = async data => {
     try {
       const userRef = doc(db, 'users', id);
       const userDoc = await getDoc(userRef);
-
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        const newTweet = createTweet(
+          userData.fullname,
+          userData.username,
+          data.content,
+        );
         await updateDoc(userRef, {
-          tweets: arrayUnion(
-            createTweet(userData.fullname, userData.username, data.content),
-          ),
+          tweets: arrayUnion(newTweet),
         });
+        setLatestTimestamp(newTweet.date.milliseconds);
+        reset();
       }
     } catch (error) {
       console.error('Error submitting tweet:', error);
@@ -46,17 +66,13 @@ function TweetComponent({ id }) {
       try {
         const querySnapshot = await getDocs(collection(db, 'users'));
         const tweets = [];
-
         querySnapshot.forEach(doc => {
           const userData = doc.data();
           if (userData.tweets) {
             tweets.push(...userData.tweets);
           }
         });
-
-        // Sort tweets by date, assuming 'date' is a timestamp field
-        tweets.sort((a, b) => b.date - a.date);
-
+        tweets.sort((a, b) => b.date.milliseconds - a.date.milliseconds);
         setAllTweets(tweets);
       } catch (error) {
         console.error('Error fetching tweets:', error);
@@ -64,15 +80,17 @@ function TweetComponent({ id }) {
     };
 
     fetchAllTweets();
-  }, []);
-
-  const renderTweet = ({ item }) => (
+  }, [latestTimestamp]);
+  const signOut = () => {
+    navigation.navigate('login');
+  };
+  const renderTweet = ({item}) => (
     <View style={styles.tweetContainer} key={item.date}>
       <View style={styles.headerContainer}>
         <Text style={styles.authorText}>{item.author}</Text>
         <Text style={styles.usernameText}>@{item.username}</Text>
       </View>
-      {/* <Text style={styles.dateText}>{item.date}</Text> */}
+      <Text style={styles.dateText}>{item.date.formatted}</Text>
       <Text style={styles.contentText}>{item.content}</Text>
     </View>
   );
@@ -86,7 +104,6 @@ function TweetComponent({ id }) {
             placeholder="Write something..."
             control={control}
             rules={{
-              required: 'Text is required',
               maxLength: {
                 value: 280,
                 message: 'Text should be maximum 280 characters long',
@@ -94,14 +111,21 @@ function TweetComponent({ id }) {
             }}
           />
           <ButtonComponent
-            backgroundColor="#0A4A5D"
+            backgroundColor="black"
             text="POST"
             onPress={handleSubmit(saveTweet)}
+            color={'#081D5D'}
           />
           <FlatList
             data={allTweets}
             renderItem={renderTweet}
             keyExtractor={item => item.date.toString()}
+          />
+          <ButtonComponent
+            backgroundColor="black"
+            text="SIGN OUT"
+            onPress={handleSubmit(signOut)}
+            color={'red'}
           />
         </View>
       </ScrollView>
@@ -133,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   dateText: {
-    color: 'white',
+    color: '#8B8B8B',
     fontSize: 12,
     marginBottom: 5,
   },
