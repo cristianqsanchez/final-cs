@@ -12,6 +12,7 @@ import {
 import {useForm} from 'react-hook-form';
 // import {getTimeAgo} from '../utils/relative-time';
 import {
+  Timestamp,
   arrayUnion,
   collection,
   doc,
@@ -21,11 +22,20 @@ import {
 } from 'firebase/firestore';
 import {db} from '../config/firebase';
 function createTweet(author, username, content) {
+  const timestamp = Timestamp.now();
+  const date = timestamp.toDate();
+
+  const options = {timeZone: 'America/Bogota'};
+  const formattedDate = date.toLocaleString('es-ES', options);
+
   return {
     author: author,
     username: username,
     content: content,
-    date: Date.now(),
+    date: {
+      milliseconds: date.getTime(),
+      formatted: date.toLocaleString('es-ES', {timeZone: 'America/Bogota'}), 
+    },
   };
 }
 function TweetComponent({id}) {
@@ -61,10 +71,7 @@ function TweetComponent({id}) {
             tweets.push(...userData.tweets);
           }
         });
-
-        // Sort tweets by date, assuming 'date' is a timestamp field
-        tweets.sort((a, b) => b.date - a.date);
-
+        tweets.sort((a, b) => b.date.milliseconds - a.date.milliseconds);
         setAllTweets(tweets);
       } catch (error) {
         console.error('Error fetching tweets:', error);
@@ -80,7 +87,7 @@ function TweetComponent({id}) {
         <Text style={styles.authorText}>{item.author}</Text>
         <Text style={styles.usernameText}>@{item.username}</Text>
       </View>
-      <Text style={styles.dateText}>{item.date}</Text>
+      <Text style={styles.dateText}>{item.date.formatted}</Text>
       <Text style={styles.contentText}>{item.content}</Text>
     </View>
   );
